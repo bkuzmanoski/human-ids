@@ -1,7 +1,7 @@
 # human-ids
 
 <!-- [![NPM version](https://img.shields.io/npm/v/human-ids.svg)](https://www.npmjs.com/package/human-ids) -->
-[![License](https://img.shields.io/npm/l/human-ids.svg)](https://github.com/bkuzmanoski/human-ids/blob/main/LICENSE.txt)
+<!-- [![License](https://img.shields.io/npm/l/human-ids.svg)](https://github.com/bkuzmanoski/human-ids/blob/main/LICENSE.txt) -->
 <!-- [![Bundle size](https://img.shields.io/bundlephobia/minzip/human-ids)](https://bundlephobia.com/result?p=human-ids) -->
 [![Build status](https://github.com/bkuzmanoski/human-ids/actions/workflows/main.yaml/badge.svg)](https://github.com/bkuzmanoski/human-ids/actions/workflows/main.yaml)
 
