@@ -14,11 +14,11 @@ const DEFAULT_CONFIG: Required<HumanIdConfig> = {
  * @param config Optional global configuration for ID generation behavior.
  * @returns An IdManager instance to create, validate, and parse IDs.
  * @example
- * const idManager = createIdManager({
- *   user: 'user',
- *   post: ['post', 12]
+ * const manager = createManager({
+ *   user: "user",
+ *   post: { prefix: "post", length: 12 }
  * });
- * const userId = idManager.create('user');
+ * const userId = manager.create("user"); // "user_..."
  */
 export const createManager = <const T extends Record<string, EntityTypeSpec>>(
   definitions: T,
@@ -73,9 +73,8 @@ export const createManager = <const T extends Record<string, EntityTypeSpec>>(
   );
 
   const allPrefixes = Object.keys(prefixToType).join("|");
-
-  const FIND_ALL_REGEX = buildRegex(allPrefixes, minLength, maxLength, false);
-  const VALIDATION_REGEX = buildRegex(allPrefixes, minLength, maxLength, true);
+  const lengthQuantifier = minLength === maxLength ? `{${minLength}}` : `{${minLength},${maxLength}}`;
+  const FIND_ALL_REGEX = new RegExp(`\\b(${allPrefixes})_[a-zA-Z0-9]${lengthQuantifier}\\b`, "g");
 
   const create = (entityType: EntityType): HumanId => {
     const prefix = typeToPrefix[entityType];
@@ -107,19 +106,23 @@ export const createManager = <const T extends Record<string, EntityTypeSpec>>(
   };
 
   const isValid = (humanId: string | undefined): boolean => {
-    if (!humanId || !VALIDATION_REGEX.test(humanId)) {
+    if (typeof humanId !== "string" || !humanId.includes("_")) {
       return false;
     }
 
     const [prefix, randomPart] = humanId.split("_");
-    const expectedType = prefixToType[prefix];
+    const entityType = prefixToType[prefix];
 
-    if (!expectedType) {
+    if (entityType === undefined) {
       return false;
     }
 
-    const expectedLength = typeToLength[expectedType];
-    return randomPart.length === expectedLength;
+    const expectedLength = typeToLength[entityType];
+    if (randomPart.length !== expectedLength) {
+      return false;
+    }
+
+    return /^[a-zA-Z0-9]+$/.test(randomPart);
   };
 
   const isType =
@@ -131,7 +134,6 @@ export const createManager = <const T extends Record<string, EntityTypeSpec>>(
 
   return {
     FIND_ALL_REGEX,
-    VALIDATION_REGEX,
     create,
     getType,
     getPrefix,
@@ -139,13 +141,4 @@ export const createManager = <const T extends Record<string, EntityTypeSpec>>(
     isType,
     findAll,
   };
-};
-
-const buildRegex = (allPrefixes: string, minLength: number, maxLength: number, exact = false): RegExp => {
-  const lengthQuantifier = minLength === maxLength ? `{${minLength}}` : `{${minLength},${maxLength}}`;
-  const flags = exact ? "" : "g";
-  return new RegExp(
-    `${exact ? "^" : "\\b"}(${allPrefixes})_[a-zA-Z0-9]${lengthQuantifier}${exact ? "$" : "\\b"}`,
-    flags
-  );
 };
