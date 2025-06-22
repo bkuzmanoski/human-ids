@@ -14,13 +14,13 @@ const DEFAULT_CONFIG: Required<HumanIdConfig> = {
  * @param config Optional global configuration for ID generation behavior.
  * @returns An IdManager instance to create, validate, and parse IDs.
  * @example
- * const manager = createManager({
+ * const manager = createIdManager({
  *   user: "user",
  *   post: { prefix: "post", length: 12 }
  * });
  * const userId = manager.create("user"); // "user_..."
  */
-export const createManager = <const T extends Record<string, EntityTypeSpec>>(
+export const createIdManager = <const T extends Record<string, EntityTypeSpec>>(
   definitions: T,
   config: HumanIdConfig = {}
 ): IdManager<keyof T & (string | symbol)> => {

@@ -2,8 +2,18 @@
   "name": "human-ids",
   "version": "0.0.1",
   "type": "module",
-  "description": "",
-  "author": "",
+  "description": "A type-safe, isomorphic, and configurable manager for creating human-readable, prefixed IDs (e.g., user_a1b2c3d4).",
+  "contributors": [
+    {
+      "name": "Sebastian Kade",
+      "url": "https://github.com/sebastiankade"
+    },
+    {
+      "name": "Brian Kuzmanoski",
+      "email": "bkuzmanoski@icloud.com",
+      "url": "https://github.com/bkuzmanoski"
+    }
+  ],
   "license": "MIT",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,7 +36,16 @@
     "README.md",
     "LICENSE.txt"
   ],
-  "keywords": [],
+  "keywords": [
+    "id",
+    "uuid",
+    "guid",
+    "human-readable",
+    "prefixed-id",
+    "typescript",
+    "isomorphic",
+    "universal"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bkuzmanoski/human-ids.git"
