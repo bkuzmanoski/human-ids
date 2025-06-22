@@ -1,0 +1,51 @@
+{
+  "name": "human-ids",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "",
+  "author": "",
+  "license": "MIT",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "test": "tsx --test ./**/*.test.ts",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE.txt"
+  ],
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bkuzmanoski/human-ids.git"
+  },
+  "homepage": "https://github.com/bkuzmanoski/human-ids#readme",
+  "bugs": {
+    "url": "https://github.com/bkuzmanoski/human-ids/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@types/node": "^18.0.0",
+    "esbuild": "^0.25.5",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.34.1"
+  }
+}
