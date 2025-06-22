@@ -36,7 +36,8 @@ export const createManager = <const T extends Record<string, EntityTypeSpec>>(
   const { typeToPrefix, typeToLength, prefixToType, minLength, maxLength } = entityTypes.reduce(
     (acc, entityType) => {
       const spec = definitions[entityType];
-      const [prefix, length] = Array.isArray(spec) ? spec : [spec, resolvedConfig.defaultLength];
+      const [prefix, length] =
+        typeof spec === "string" ? [spec, resolvedConfig.defaultLength] : [spec.prefix, spec.length];
 
       if (!prefix || typeof prefix !== "string" || prefix.includes("_")) {
         throw new Error(
@@ -142,5 +143,9 @@ export const createManager = <const T extends Record<string, EntityTypeSpec>>(
 
 const buildRegex = (allPrefixes: string, minLength: number, maxLength: number, exact = false): RegExp => {
   const lengthQuantifier = minLength === maxLength ? `{${minLength}}` : `{${minLength},${maxLength}}`;
-  return new RegExp(`${exact ? "^" : "\\b"}(${allPrefixes})_[a-zA-Z0-9]${lengthQuantifier}${exact ? "$" : "\\b"}`, "g");
+  const flags = exact ? "" : "g";
+  return new RegExp(
+    `${exact ? "^" : "\\b"}(${allPrefixes})_[a-zA-Z0-9]${lengthQuantifier}${exact ? "$" : "\\b"}`,
+    flags
+  );
 };
