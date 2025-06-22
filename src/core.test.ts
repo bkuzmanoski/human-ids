@@ -1,44 +1,44 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
 
-import { createManager } from "./core.js";
+import { createIdManager } from "./core.js";
 
-void describe("createManager", () => {
+void describe("createIdManager", () => {
   void describe("Initialization", () => {
     void it("should throw an error if no definitions are provided", () => {
-      assert.throws(() => createManager({}), {
+      assert.throws(() => createIdManager({}), {
         message: "Cannot create an ID manager with no type definitions.",
       });
     });
 
     void it("should throw an error for duplicate prefixes", () => {
-      assert.throws(() => createManager({ user: "user", admin: "user" }), {
+      assert.throws(() => createIdManager({ user: "user", admin: "user" }), {
         message: 'Duplicate prefix "user" detected. Prefixes must be unique.',
       });
     });
 
     void it("should throw an error for invalid prefixes", () => {
-      assert.throws(() => createManager({ user: "user_admin" }), {
+      assert.throws(() => createIdManager({ user: "user_admin" }), {
         message: 'Invalid prefix for type "user": Prefixes must be non-empty strings and cannot contain underscores.',
       });
-      assert.throws(() => createManager({ user: "" }), {
+      assert.throws(() => createIdManager({ user: "" }), {
         message: 'Invalid prefix for type "user": Prefixes must be non-empty strings and cannot contain underscores.',
       });
     });
 
     void it("should successfully create a manager with valid definitions", () => {
-      const manager = createManager({ user: "user", post: { prefix: "post", length: 12 } });
+      const manager = createIdManager({ user: "user", post: { prefix: "post", length: 12 } });
       assert.ok(manager, "Manager should be created");
       assert.ok(manager.create, "Manager should have a create method");
     });
 
     void it("should respect custom defaultLength", () => {
-      const manager = createManager({ user: "user" }, { defaultLength: 10 });
+      const manager = createIdManager({ user: "user" }, { defaultLength: 10 });
       assert.strictEqual(manager.create("user").split("_")[1].length, 10);
     });
 
     void it("should respect custom generateId function", () => {
-      const manager = createManager(
+      const manager = createIdManager(
         { user: "user" },
         {
           generateId: (length) => "a".repeat(length),
@@ -48,7 +48,7 @@ void describe("createManager", () => {
     });
   });
 
-  const manager = createManager({
+  const manager = createIdManager({
     user: "user",
     post: { prefix: "post", length: 12 },
     comment: { prefix: "comment", length: 8 },
