@@ -11,8 +11,8 @@ Stop using UUIDs and database integers in your user-facing applications. Start u
 
 Example:
 
-- `https://example.com/post_a1b2c3d4>`
-- `https://api.myapp.com/user_k4j5n6m7>`
+- `https://example.com/post_a1b2c3d4`
+- `https://api.myapp.com/user_k4j5n6m7`
 
 ## Why?
 
