@@ -1,9 +1,9 @@
-# short-type-ids
+# short-type-id
 
-<!-- [![NPM version](https://img.shields.io/npm/v/short-type-ids.svg)](https://www.npmjs.com/package/short-type-ids) -->
-<!-- [![License](https://img.shields.io/npm/l/short-type-ids.svg)](https://github.com/bkuzmanoski/short-type-ids/blob/main/LICENSE.txt) -->
-<!-- [![Bundle size](https://img.shields.io/bundlephobia/minzip/short-type-ids)](https://bundlephobia.com/result?p=short-type-ids) -->
-[![Build status](https://github.com/bkuzmanoski/short-type-ids/actions/workflows/main.yaml/badge.svg)](https://github.com/bkuzmanoski/short-type-ids/actions/workflows/main.yaml)
+<!-- [![NPM version](https://img.shields.io/npm/v/short-type-id.svg)](https://www.npmjs.com/package/short-type-id) -->
+<!-- [![License](https://img.shields.io/npm/l/short-type-id.svg)](https://github.com/bkuzmanoski/short-type-id/blob/main/LICENSE.txt) -->
+<!-- [![Bundle size](https://img.shields.io/bundlephobia/minzip/short-type-id)](https://bundlephobia.com/result?p=short-type-id) -->
+[![Build status](https://github.com/bkuzmanoski/short-type-id/actions/workflows/main.yaml/badge.svg)](https://github.com/bkuzmanoski/short-type-id/actions/workflows/main.yaml)
 
 A zero-dependency, type-safe library for creating and managing self-describing IDs inspired by Stripe's object IDs.
 
@@ -31,7 +31,7 @@ Using prefixed IDs like `u_...` and `p_...` offers advantages over traditional i
 ## Installation
 
 ```bash
-npm install short-type-ids
+npm install short-type-id
 ```
 
 ## Getting Started
@@ -41,7 +41,7 @@ npm install short-type-ids
 3. Use the instance to create, validate, and parse your IDs.
 
 ```ts
-import createIdContext from 'short-type-ids';
+import createIdContext from 'short-type-id';
 
 // Define your entity specifications and configuration
 const definitions = {
@@ -136,7 +136,7 @@ The create() method will validate its output and throw a descriptive error if th
 **Example using [`nanoid`](https://github.com/ai/nanoid):**
 
 ```typescript
-import createManager from 'short-type-ids';
+import createManager from 'short-type-id';
 import { nanoid } from 'nanoid'
 
 const idContext = createManager(
@@ -160,7 +160,7 @@ console.log(orderId); // e.g., "o_f4a2b9"
 TL:DR;
 
 - **typeid** if you are building a large, distributed system, need to sort by ID, and require a formal, cross-language standard for your globally unique identifiers.
-- **short-type-ids** if you are building a TypeScript application and need simple, human-readable, prefixed IDs with control over their format, length, and generation logic to suit your use case.
+- **short-type-id** if you are building a TypeScript application and need simple, human-readable, prefixed IDs with control over their format, length, and generation logic to suit your use case.
 
 ### Comparison
 
