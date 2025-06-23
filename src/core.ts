@@ -1,43 +1,35 @@
-import { HumanIdConfig, IdManager, HumanId, IdPrefix, EntityTypeSpec } from "./types.js";
-import { generateId } from "./utils.js";
-
-const DEFAULT_CONFIG: Required<HumanIdConfig> = {
-  generateId: generateId,
-  defaultLength: 8,
-};
+import { IdConfig, IdContext, Id, IdPrefix, TypeSpec } from "./types.js";
 
 /**
- * Creates an ID manager for your defined entity types.
+ * Creates an ID context instance for your defined entity types.
  *
  * @param definitions A map where keys are your entity type names and
  * values are the specification for generating IDs for that type.
- * @param config Optional global configuration for ID generation behavior.
- * @returns An IdManager instance to create, validate, and parse IDs.
+ * @param config Global configuration for ID generation behavior.
+ * @returns An IdContext instance to create, validate, and parse IDs.
  * @example
- * const manager = createIdManager({
- *   user: "user",
- *   post: { prefix: "post", length: 12 }
+ * const shortId = createIdContext({
+ *   user: "u",
+ *   post: { prefix: "p", length: 12 }
  * });
- * const userId = manager.create("user"); // "user_..."
+ * const userId = shortId.create("u"); // "u_..."
  */
-export const createIdManager = <const T extends Record<string, EntityTypeSpec>>(
+export const createIdContext = <const T extends Record<string, TypeSpec>>(
   definitions: T,
-  config: HumanIdConfig = {}
-): IdManager<keyof T & (string | symbol)> => {
+  config: IdConfig
+): IdContext<keyof T & (string | symbol)> => {
   type EntityType = keyof T & (string | symbol);
 
   const entityTypes = Object.keys(definitions) as EntityType[];
 
   if (entityTypes.length === 0) {
-    throw new Error("Cannot create an ID manager with no type definitions.");
+    throw new Error("Cannot create an ID context with no type definitions.");
   }
 
-  const resolvedConfig = { ...DEFAULT_CONFIG, ...config };
   const { typeToPrefix, typeToLength, prefixToType, minLength, maxLength } = entityTypes.reduce(
     (acc, entityType) => {
       const spec = definitions[entityType];
-      const [prefix, length] =
-        typeof spec === "string" ? [spec, resolvedConfig.defaultLength] : [spec.prefix, spec.length];
+      const [prefix, length] = typeof spec === "string" ? [spec, config.defaultLength] : [spec.prefix, spec.length];
 
       if (!prefix || typeof prefix !== "string" || prefix.includes("_")) {
         throw new Error(
@@ -76,41 +68,61 @@ export const createIdManager = <const T extends Record<string, EntityTypeSpec>>(
   const lengthQuantifier = minLength === maxLength ? `{${minLength}}` : `{${minLength},${maxLength}}`;
   const FIND_ALL_REGEX = new RegExp(`\\b(${allPrefixes})_[a-zA-Z0-9]${lengthQuantifier}\\b`, "g");
 
-  const create = (entityType: EntityType): HumanId => {
+  const create = (entityType: EntityType): Id => {
     const prefix = typeToPrefix[entityType];
     if (!prefix) {
-      throw new Error(`Unknown entity type: ${String(entityType)}`);
+      throw new Error(`Unknown type: ${String(entityType)}`);
     }
 
     const length = typeToLength[entityType];
-    const id = resolvedConfig.generateId(length);
-    return `${prefix}_${id}`;
+    const uniquePart = config.generateUniqueId(length);
+
+    if (typeof uniquePart !== "string") {
+      throw new Error(
+        `The provided 'generateUniqueId' function must return a string, but it returned a value of type ${typeof uniquePart}.`
+      );
+    }
+
+    if (uniquePart.length !== length) {
+      throw new Error(
+        `The provided 'generateUniqueId' function returned a string with length ${uniquePart.length} but expected length ${length}.`
+      );
+    }
+
+    if (!/^[a-zA-Z0-9]+$/.test(uniquePart)) {
+      throw new Error(
+        "The provided 'generateUniqueId' function returned a string with invalid characters. Only alphanumeric characters (a-z, A-Z, 0-9) are allowed."
+      );
+    }
+
+    return `${prefix}_${uniquePart}`;
   };
 
-  const getType = (humanId: HumanId | undefined): EntityType | undefined => {
-    if (!humanId) {
+  const getType = (id: Id | undefined): EntityType | undefined => {
+    if (!id) {
       return undefined;
     }
 
-    const prefix = humanId.split("_")[0];
+    const prefix = id.split("_")[0];
     return prefixToType[prefix] as EntityType | undefined;
   };
 
   const getPrefix = (entityType: EntityType): IdPrefix => {
     const prefix = typeToPrefix[entityType];
     if (prefix === undefined) {
-      throw new Error(`Unknown entity type provided to getPrefix: ${String(entityType)}`);
+      throw new Error(`Unknown type provided to getPrefix: ${String(entityType)}`);
     }
 
     return prefix;
   };
 
-  const isValid = (humanId: string | undefined): boolean => {
-    if (typeof humanId !== "string" || !humanId.includes("_")) {
+  const isValid = (id: string | undefined): boolean => {
+    if (typeof id !== "string" || !id.includes("_")) {
       return false;
     }
 
-    const [prefix, randomPart] = humanId.split("_");
+    const [prefix, uniquePart] = id.split("_");
+
     const entityType = prefixToType[prefix];
 
     if (entityType === undefined) {
@@ -118,22 +130,21 @@ export const createIdManager = <const T extends Record<string, EntityTypeSpec>>(
     }
 
     const expectedLength = typeToLength[entityType];
-    if (randomPart.length !== expectedLength) {
+    if (uniquePart.length !== expectedLength) {
       return false;
     }
 
-    return /^[a-zA-Z0-9]+$/.test(randomPart);
+    return /^[a-zA-Z0-9]+$/.test(uniquePart);
   };
 
   const isType =
     (entityType: EntityType) =>
-    (humanId: string): boolean =>
-      getType(humanId) === entityType;
+    (id: string): boolean =>
+      getType(id) === entityType;
 
-  const findAll = (text: string): HumanId[] => text.match(FIND_ALL_REGEX) ?? [];
+  const findAll = (text: string): Id[] => text.match(FIND_ALL_REGEX)?.filter(isValid) ?? [];
 
   return {
-    FIND_ALL_REGEX,
     create,
     getType,
     getPrefix,

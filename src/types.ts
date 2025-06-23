@@ -1,18 +1,17 @@
-export interface HumanIdConfig {
-  generateId?: (length: number) => string;
-  defaultLength?: number;
+export interface IdConfig {
+  generateUniqueId: (length: number) => string;
+  defaultLength: number;
 }
 
-export interface IdManager<T extends string | symbol> {
-  readonly FIND_ALL_REGEX: RegExp;
-  readonly create: (entityType: T) => HumanId;
-  readonly getType: (id: HumanId | undefined) => T | undefined;
-  readonly getPrefix: (entityType: T) => IdPrefix;
-  readonly isValid: (id: HumanId | undefined) => boolean;
-  readonly isType: (entityType: T) => (id: HumanId) => boolean;
-  readonly findAll: (text: string) => HumanId[];
+export interface IdContext<T extends string | symbol> {
+  readonly create: (type: T) => Id;
+  readonly getType: (id: Id | undefined) => T | undefined;
+  readonly getPrefix: (type: T) => IdPrefix;
+  readonly isValid: (id: Id | undefined) => boolean;
+  readonly isType: (type: T) => (id: Id) => boolean;
+  readonly findAll: (text: string) => Id[];
 }
 
-export type HumanId = string;
+export type Id = string;
 export type IdPrefix = string;
-export type EntityTypeSpec = IdPrefix | { prefix: IdPrefix; length: number };
+export type TypeSpec = IdPrefix | { prefix: IdPrefix; length: number };

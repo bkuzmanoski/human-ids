@@ -1,5 +1,5 @@
-import { HumanIdConfig, IdManager, HumanId, IdPrefix, EntityTypeSpec } from "./types.js";
-import { createIdManager } from "./core.js";
+import { IdConfig, IdContext, Id, IdPrefix, TypeSpec } from "./types.js";
+import { createIdContext } from "./core.js";
 
-export { HumanIdConfig, IdManager, HumanId, IdPrefix, EntityTypeSpec };
-export default createIdManager;
+export { IdConfig, IdContext, Id, IdPrefix, TypeSpec };
+export default createIdContext;
